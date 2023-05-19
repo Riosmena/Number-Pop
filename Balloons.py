@@ -13,7 +13,7 @@ MORADO = (255, 0, 255)
 colores = [ROJO, VERDE, AZUL, AMARILLO, MORADO]
 
 # Definir un título
-pygame.display.set_caption("Math balloons")
+pygame.display.set_caption("Number Pop")
 
 # Definir dimensiones de la pantalla
 dimensiones = (1300, 760)
@@ -25,8 +25,8 @@ fuente2 = pygame.font.SysFont('Comic Sans MS', 40)
 
 # Función para generar operación
 def operacion_aleatoria(resultado):
-    operadores = ['+', '-', '*', '//']
-    num1 = random.randint(0, resultado)
+    operadores = ['+', '-', '*', '/']
+    num1 = random.randint(1, resultado)
     operador = random.choice(operadores)
 
     if operador == '+':
@@ -37,10 +37,16 @@ def operacion_aleatoria(resultado):
         return f"{num2} - {num1} = ?"
     elif operador == '*':
         num2 = resultado // num1
-        return f"{num1} * {num2} = ?"
+        if num1 * num2 != resultado:
+            return operacion_aleatoria(resultado)
+        else:
+            return f"{num1} * {num2} = ?"
     else:
         num2 = resultado * num1
-        return f"{num2} / {num1} = ?"
+        if num2 / num1 != resultado:
+            return operacion_aleatoria(resultado)
+        else:
+            return f"{num2} / {num1} = ?"
 
 # Definir imagen de fondo
 fondo = pygame.image.load("sky.jpg").convert()
@@ -50,7 +56,7 @@ rectangulo_contenedor = pygame.Rect(0, 0, dimensiones[0], 100)
 
 # Definir una lista de pelotas
 pelotas = []
-for i in range(100):
+for i in range(80):
     # Crear una pelota con posición y velocidad aleatorias
     pelota = {
         'x': random.randint(30, dimensiones[0] - 30),
@@ -67,34 +73,56 @@ for i in range(100):
 def getNumber(index):
     return pelotas[index]['numero']
 
-# Función para generar operación
-def operacion_aleatoria(operacion):
-    operadores = ['+', '-', '*', '//']
-    num1 = random.randint(0, operacion)
-    operador = random.choice(operadores)
+# # Función para generar operación
+# def nueva_operacion_aleatoria(res):
+#     operadores = ['+', '-', '*', '/']
+#     num1 = random.randint(1, res)
+#     operador = random.choice(operadores)
 
-    if operador == '+':
-        num2 = operacion - num1
-        return f"{num1} + {num2} = ?"
-    elif operador == '-':
-        num2 = operacion + num1
-        return f"{num2} - {num1} = ?"
-    elif operador == '*':
-        if num1 == 0:
-            return operacion_aleatoria(operacion)
-        num2 = operacion // num1
-        return f"{num1} * {num2} = ?"
-    else:
-        num2 = operacion * num1
-        return f"{num2} / {num1} = ?"
+#     if operador == '+':
+#         num2 = res - num1
+#         return f"{num1} + {num2} = ?"
+#     elif operador == '-':
+#         num2 = res + num1
+#         return f"{num2} - {num1} = ?"
+#     elif operador == '*':
+#         num2 = res // num1
+#         return f"{num1} * {num2} = ?"
+#     else:
+#         num2 = res * num1
+#         return f"{num2} / {num1} = ?"
     
 # Generar el resultado
 resultado = getNumber(random.randint(0, 59))
 operacion = operacion_aleatoria(resultado)
 
+# Puntuación inicial
+puntos = 0
+
+# Tiempo restante
+duracion = 180 # 3 minutos → 180 segundos
+tiempo = pygame.time.get_ticks()
+reloj = pygame.time.Clock()
+
+# Factor de escala para la velocidad de las pelotas
+factor_escala = 3
+
 # Loop principal del juego
 jugando = True
 while jugando:
+
+    # Regular los frames
+    reloj.tick(60)
+
+    # Calcular el tiempo transcurrido en segundos desde el inicio del juego
+    tiempo_actual = pygame.time.get_ticks()
+    tiempo_transcurrido = (tiempo_actual - tiempo) / 1000
+
+    # Calcular el tiempo restante en segundos
+    tiempo_restante = duracion - tiempo_transcurrido
+
+    if tiempo_restante <= 0:
+        jugando = False
     # Procesar eventos
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
@@ -127,12 +155,13 @@ while jugando:
                         # Renderizar la superficie de texto en la ventana de Pygame
                         pantalla.blit(text_surface, (dimensiones[0] // 2 - text_surface.get_width() // 2,
                                         dimensiones[1] // 16 - text_surface.get_height() // 2))
+                        puntos += 1
                     break
 
     # Mover las pelotas
     for pelota in pelotas:
-        pelota['x'] += pelota['dx']
-        pelota['y'] += pelota['dy']
+        pelota['x'] += pelota['dx'] * factor_escala
+        pelota['y'] += pelota['dy'] * factor_escala
         
         # Si la pelota sale de la pantalla, rebotarla
         if pelota['x'] < pelota['radio'] or pelota['x'] > dimensiones[0] - pelota['radio']:
@@ -163,6 +192,19 @@ while jugando:
     # Renderizar la superficie de texto en la ventana de Pygame
     pantalla.blit(text_surface, (dimensiones[0] // 2 - text_surface.get_width() // 2,
                             dimensiones[1] // 16 - text_surface.get_height() // 2))
+    
+    # Crear una superficie de texto con la puntuación
+    puntuacion = fuente.render(f"Puntuación: {puntos}", True, NEGRO)
+
+    # Renderizar la superficie de texto de la puntuación en la ventana de Pygame
+    pantalla.blit(puntuacion, (20, 20))
+
+    # Crear una superficie de texto con el tiempo restante
+    tiempo_restante_str = f"Tiempo restante: {int(tiempo_restante)} s"
+    tiempo_restante_surface = fuente.render(tiempo_restante_str, True, NEGRO)
+
+    # Renderizar la superficie de texto del tiempo restante en la ventana de Pygame
+    pantalla.blit(tiempo_restante_surface, (dimensiones[0] - tiempo_restante_surface.get_width() - 20, 20))
 
     # Actualizar la pantalla
     pygame.display.flip()
