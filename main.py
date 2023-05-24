@@ -2,6 +2,7 @@ import pygame
 import random
 import pygame_menu
 import time
+import asyncio
 
 pygame.init()
 
@@ -79,7 +80,7 @@ def operacion_aleatoria(resultado):
             return f"{num2} / {num1} = ?"
 
 # Función para iniciar el juego principal
-def iniciar_juego():
+async def iniciar_juego():
     # Generar el resultado
     resultado = getNumber(random.randint(0, 59))
     operacion = operacion_aleatoria(resultado)
@@ -201,6 +202,7 @@ def iniciar_juego():
 
         # Actualizar la pantalla
         pygame.display.flip()
+        await asyncio.sleep(0)
 
     # Salir de pygame
     pygame.quit()
@@ -239,7 +241,7 @@ def menu_principal():
                 return
             elif evento.type == pygame.MOUSEBUTTONDOWN:
                 if jugar_rect.collidepoint(evento.pos):
-                    iniciar_juego()
+                    asyncio.run(iniciar_juego())
                     menu = False
                 elif instrucciones_rect.collidepoint(evento.pos):
                     mostrar_instrucciones()
@@ -305,9 +307,6 @@ def mostrar_instrucciones():
         # Dibujar el fondo
         pantalla.blit(fondo2, [0, 0])
 
-        # Dibujar el rectángulo del área de las instrucciones
-        # pygame.draw.rect(pantalla, NEGRO, area_instrucciones)
-
         # Renderizar los textos de las instrucciones en la pantalla
         for i, linea in enumerate(instrucciones):
             texto = fuente.render(linea, True, NEGRO)
@@ -318,7 +317,6 @@ def mostrar_instrucciones():
 
         # Actualizar la pantalla
         pygame.display.flip()
-
 
 # Llamar al menú principal
 menu_principal()
