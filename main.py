@@ -24,6 +24,7 @@ pantalla = pygame.display.set_mode(dimensiones)
 fuente = pygame.font.SysFont('Comic Sans MS', 20)
 fuente2 = pygame.font.SysFont('Comic Sans MS', 40)
 fuente3 = pygame.font.SysFont('Comic Sans MS', 80)
+fuente4 = pygame.font.SysFont('Comic Sans MS', 60)
 
 # Definir imagen de fondo
 fondo = pygame.image.load(f"assets/sky.jpg").convert()
@@ -222,15 +223,14 @@ async def menu_principal():
     NEGRO = (0, 0, 0)
 
     # Definir texto del menú principal
-    titulo = fuente.render("Number Pop", True, NEGRO)
+    titulo = fuente4.render("Number Pop", True, NEGRO)
     jugar_texto = fuente.render("Jugar", True, NEGRO)
     instrucciones_texto = fuente.render("Instrucciones", True, NEGRO)
     salir_texto = fuente.render("Salir", True, NEGRO)
 
     # Definir rectángulos de los botones
-    jugar_rect = jugar_texto.get_rect(center=(dimensiones[0] // 2, dimensiones[1] // 2 - 50))
-    instrucciones_rect = instrucciones_texto.get_rect(center=(dimensiones[0] // 2, dimensiones[1] // 2))
-    salir_rect = salir_texto.get_rect(center=(dimensiones[0] // 2, dimensiones[1] // 2 + 50))
+    jugar_rect = jugar_texto.get_rect(center=(dimensiones[0] // 2, dimensiones[1] // 2))
+    instrucciones_rect = instrucciones_texto.get_rect(center=(dimensiones[0] // 2, dimensiones[1] // 2 + 80))
 
     # Loop principal del menú
     menu = True
@@ -245,18 +245,14 @@ async def menu_principal():
                     menu = False
                 elif instrucciones_rect.collidepoint(evento.pos):
                     await mostrar_instrucciones()
-                elif salir_rect.collidepoint(evento.pos):
-                    pygame.quit()
-                    return
 
         # Dibujar el fondo
         pantalla.blit(fondo2,[0, 0])
 
         # Renderizar los textos en la pantalla
-        pantalla.blit(titulo, (dimensiones[0] // 2 - titulo.get_width() // 2, 100))
+        pantalla.blit(titulo, (dimensiones[0] // 2 - titulo.get_width() // 2, 180))
         pantalla.blit(jugar_texto, jugar_rect)
         pantalla.blit(instrucciones_texto, instrucciones_rect)
-        pantalla.blit(salir_texto, salir_rect)
 
         # Actualizar la pantalla
         pygame.display.flip()
