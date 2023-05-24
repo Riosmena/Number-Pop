@@ -1,6 +1,7 @@
 import pygame
 import random
 import pygame_menu
+import time
 
 pygame.init()
 
@@ -21,6 +22,7 @@ pantalla = pygame.display.set_mode(dimensiones)
 # Crear una fuente
 fuente = pygame.font.SysFont('Comic Sans MS', 20)
 fuente2 = pygame.font.SysFont('Comic Sans MS', 40)
+fuente3 = pygame.font.SysFont('Comic Sans MS', 80)
 
 # Definir imagen de fondo
 fondo = pygame.image.load(f"assets/sky.jpg").convert()
@@ -107,6 +109,10 @@ def iniciar_juego():
         tiempo_restante = duracion - tiempo_transcurrido
 
         if tiempo_restante <= 0:
+            Gameover = fuente3.render("¡Fin del juego!", True, NEGRO)
+            pantalla.blit(Gameover,(dimensiones[0] // 2 - Gameover.get_width() // 2, dimensiones[1] / 2))
+            pygame.display.flip()
+            time.sleep(3)
             jugando = False
             menu_principal()
         # Procesar eventos
@@ -198,7 +204,6 @@ def iniciar_juego():
 
     # Salir de pygame
     pygame.quit()
-
 
 def menu_principal():
     pygame.init()
