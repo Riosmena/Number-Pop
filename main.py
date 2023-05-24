@@ -115,7 +115,7 @@ async def iniciar_juego():
             pygame.display.flip()
             time.sleep(3)
             jugando = False
-            menu_principal()
+            await menu_principal()
         # Procesar eventos
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
@@ -207,7 +207,7 @@ async def iniciar_juego():
     # Salir de pygame
     pygame.quit()
 
-def menu_principal():
+async def menu_principal():
     pygame.init()
 
     # Definir dimensiones de la pantalla
@@ -241,10 +241,10 @@ def menu_principal():
                 return
             elif evento.type == pygame.MOUSEBUTTONDOWN:
                 if jugar_rect.collidepoint(evento.pos):
-                    asyncio.run(iniciar_juego())
+                    await iniciar_juego()
                     menu = False
                 elif instrucciones_rect.collidepoint(evento.pos):
-                    mostrar_instrucciones()
+                    await mostrar_instrucciones()
                 elif salir_rect.collidepoint(evento.pos):
                     pygame.quit()
                     return
@@ -260,8 +260,9 @@ def menu_principal():
 
         # Actualizar la pantalla
         pygame.display.flip()
+        await asyncio.sleep(0)
 
-def mostrar_instrucciones():
+async def mostrar_instrucciones():
     pygame.init()
 
     # Definir dimensiones de la pantalla
@@ -317,6 +318,7 @@ def mostrar_instrucciones():
 
         # Actualizar la pantalla
         pygame.display.flip()
+        await asyncio.sleep(0)
 
 # Llamar al menú principal
-menu_principal()
+asyncio.run(menu_principal())
