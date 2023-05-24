@@ -1,10 +1,10 @@
 import pygame
 import random
-import pygame_menu
 import time
 import asyncio
 
 pygame.init()
+pygame.display.set_caption("Number Pop")
 
 # Definir colores
 BLANCO = (255, 255, 255)
